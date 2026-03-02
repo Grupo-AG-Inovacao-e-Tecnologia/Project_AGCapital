@@ -1,0 +1,55 @@
+---
+description: Integração de testes (browser/Playwright e validação de Server Actions e UI) no fluxo de desenvolvimento. Este projeto não usa Igniter.js nem OpenAPI obrigatório.
+globs: []
+alwaysApply: true
+---
+
+# Testing & Validation Workflow
+
+This rule defines how testing and validation integrate into the development workflow. **This project uses Next.js with Server Actions (no Igniter.js).** Validation is done via browser automation (Playwright) and runtime behavior; there is no mandatory OpenAPI or `get_openapi_spec` step.
+
+## 1. Development Cycle Integration
+
+### 1.1 Workflow Phases
+- **Work Phase:** Implement features using Server Actions, Route Handlers, and Server Components.
+- **Validation Phase:** Confirm behavior via browser (Playwright): navigation, forms, Server Actions, and critical user flows.
+- **Revise Phase:** Re-test after fixes; run any unit/integration tests the project defines.
+
+### 1.2 When to Validate
+- After implementing or changing Server Actions or Route Handlers.
+- After changing UI or forms that call those actions.
+- Before marking tasks complete when the change is user-facing or backend-critical.
+
+## 2. Server & Browser Validation Protocol
+
+### 2.1 Server Check
+- Identify the dev server port (e.g. from `package.json` or Next.js default 3000).
+- Verify if a process is already running on that port.
+- If not, start the Next.js dev server (e.g. `npm run dev` / `next dev`) and wait for it to be ready (e.g. 3–5 seconds).
+
+### 2.2 Browser (Playwright) Validation
+- Navigate to the app (e.g. http://localhost:3000).
+- Test relevant flows: login, forms, mutations via Server Actions, navigation, error states.
+- Use snapshot, click, type, and network/console tools as needed to verify behavior and debug.
+
+### 2.3 Optional: Route Handler (HTTP API) Testing
+- If the project exposes Route Handlers in `src/app/api/...`, they can be tested with `fetch` or `make_api_request` (if available) against the running app.
+- This is **not** a mandatory first step; browser and runtime validation take precedence.
+
+## 3. Quality Gates
+
+### 3.1 Task Completion
+- User-facing or backend-critical work should be validated (e.g. browser or tests) before marking done.
+- Document any known limitations or follow-up tests.
+
+### 3.2 Memory & Documentation
+- Store notable validation patterns or flaky steps as memories when useful.
+- Relate them to features or requirements when relevant.
+
+## 4. Best Practices Summary
+
+1. **Server first:** Ensure the Next.js dev server is running before browser or API checks.
+2. **Browser for E2E:** Use Playwright for UI, forms, and Server Action flows.
+3. **No OpenAPI dependency:** There is no requirement to call `get_openapi_spec` or maintain an OpenAPI contract for this stack.
+4. **Optional API tests:** Route Handlers can be tested via HTTP when needed; not mandatory for every change.
+5. **Store patterns:** Save successful validation approaches for reuse.

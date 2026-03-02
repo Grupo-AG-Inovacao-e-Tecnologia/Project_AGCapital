@@ -1,0 +1,215 @@
+---
+description: Outlines the mandatory development workflow, emphasizing analysis before action, tool prioritization, smart development patterns, and quality assurance protocols.
+globs: []
+alwaysApply: true
+---
+
+# Development Workflow
+
+This document outlines the mandatory workflow for all development tasks. It ensures that every action is preceded by proper analysis, follows established patterns, and utilizes the most effective tools available. **THIS IS NOT OPTIONAL** - following this workflow is critical for maintaining code quality and preventing errors.
+
+## 0. CRITICAL SAFETY PROTOCOLS
+
+### Build Operations Ban
+**🚫 ABSOLUTE PROHIBITION: NEVER execute build commands without explicit user permission**
+- This includes: `npm run build`, `bun run build`, `yarn build`, or any build-related commands
+- Always ask for explicit permission before any build operation
+- Build operations are considered high-risk and require user oversight
+
+### Mandatory Testing Protocol
+**🔬 VALIDATION REQUIREMENT: All implementations require autonomous testing.**
+- **Server check:** Before browser or integration testing, identify the dev server port (e.g. from `package.json` scripts or Next.js default 3000) and verify if a process is already running on that port.
+- **Server startup (if needed):** If the port is not in use, start the Next.js dev server (e.g. `npm run dev` or `next dev`) and wait for it to be ready (e.g. 3–5 seconds).
+- **Front-end / integration testing:** Once the app is reachable (e.g. http://localhost:3000), use the browser (Playwright) to validate UI, Server Actions, and critical flows.
+- **Cannot advance tasks:** Without successful testing validation where applicable.
+- **Research:** Use browser freely for market research, documentation, and staying updated.
+- **Note:** This project uses Next.js with Server Actions (no Igniter.js). There is no OpenAPI/`get_openapi_spec` requirement; validation is via browser and runtime behavior.
+
+## 1. Mandatory Protocol: Analyze Before Action
+
+**⚠️ CRITICAL REQUIREMENT: This is the most critical rule in the workflow. It is NEVER optional. ⚠️**
+
+**NEVER** read, modify, or work with any file without **FIRST** running `analyze_file`. This is a non-negotiable safety and quality protocol that prevents errors, ensures type safety, and maintains code quality.
+
+**Why this is critical:**
+- Prevents TypeScript errors from being introduced
+- Ensures understanding of file structure and dependencies
+- Identifies existing issues before making changes
+- Provides context for safe modifications
+- Maintains architectural consistency
+
+### 1.1. The Analysis Workflow
+1.  **Analyze the File:** Before any operation, run `analyze_file` to get a comprehensive overview.
+    ```json
+    {
+      "tool": "analyze_file",
+      "args": { "filePath": "/path/to/your/file.ts", "includeErrors": true }
+    }
+    ```
+2.  **Assess Health:** Check the `health_summary.overall_status`.
+    *   `"healthy"`: ✅ Safe to proceed.
+    *   `"has_warnings"`: ⚠️ Proceed with caution.
+    *   `"needs_attention"`: ❌ **STOP.** You MUST fix the TypeScript errors before making any other changes.
+3.  **Understand Context:** Review the file's structure, imports, and exports to understand its role in the system.
+4.  **Investigate Dependencies:** If the file uses abstractions (e.g., actions, services, repos), and you encounter errors related to them, **you must also analyze the source file of that dependency**. Don't assume its behavior.
+    -   *Example:* If an auth helper has a type error, analyze the file where it is defined.
+5.  **Store Insights:** After analysis, store key findings in the memory system to accelerate future work.
+
+### 1.2. Post-Modification Verification - MANDATORY
+
+**⚠️ CRITICAL**: After **EVERY** modification, you **MUST** re-run `analyze_file` to verify that no new errors have been introduced and that the file's health has been maintained or improved.
+
+**This verification is required because:**
+- TypeScript errors can cascade and affect other files
+- Import/export changes can break dependencies
+- Syntax errors can break the entire build
+- Type mismatches can cause runtime errors
+- Performance regressions can be introduced
+
+**If `analyze_file` shows errors after your changes:**
+1. **STOP** - Do not make any other changes
+2. Fix the errors immediately
+3. Re-run `analyze_file` to confirm fixes
+4. Only then continue with other work
+
+**NEVER ignore or postpone fixing analysis errors.**
+
+## 2. Tool Prioritization: Use Specialized Tools
+
+To ensure accuracy, context-awareness, and knowledge retention, you **MUST** prioritize specialized MCP Server tools over generic alternatives.
+
+### Tool Selection Hierarchy
+| Task | ✅ ALWAYS USE (Primary MCP Tools) | ❌ NEVER USE (Generic Alternatives) |
+| :--- | :--- | :--- |
+| **File Analysis** | `analyze_file`, `analyze_feature` | `read_file` without analysis (DANGEROUS) |
+| **Code Investigation** | `find_implementation`, `explore_source`, `trace_dependency_chain` | `grep_search`, `codebase_search` |
+| **API / Backend** | Route Handlers + Server Actions; browser/Playwright for E2E | Ad-hoc curl only when needed |
+| **Knowledge Storage** | `store_memory`, `relate_memories` | Storing info only in conversation history |
+| **Research** | `get_documentation`, `search_github_issues` | Relying on outdated training data |
+| **Task Management** | `create_task`, `list_tasks`, `update_task_status` | Manual, ad-hoc tracking |
+| **Agent Delegation** | `delegate_to_agent`, `monitor_agent_tasks` | Performing all tasks manually |
+
+### Critical Analysis Tool Usage
+
+**Before ANY file operation:**
+```javascript
+// MANDATORY - Always run this first
+await analyze_file({
+  filePath: "path/to/your/file.ts",
+  includeErrors: true,
+  projectRoot: "./",
+});
+
+// Check the health_summary.overall_status:
+// - "healthy" ✅ - Safe to proceed
+// - "has_warnings" ⚠️ - Proceed with caution, fix warnings if possible
+// - "needs_attention" ❌ - STOP. Fix errors before any modifications
+```
+
+**After ANY file modification:**
+```javascript
+// MANDATORY - Always verify your changes
+await analyze_file({
+  filePath: "path/to/modified/file.ts",
+  includeErrors: true,
+  projectRoot: "./",
+});
+
+// If errors are found, fix them immediately
+// Never leave a file in an error state
+```
+
+## 3. Smart Development Patterns
+
+### 3.1. Analysis-First Development Cycle
+
+**The correct development cycle is:**
+1. 🔍 **Analyze** - Use `analyze_file` to understand the current state
+2. 📝 **Plan** - Determine what changes are needed
+3. ✏️ **Modify** - Make careful, targeted changes
+4. 🔍 **Re-analyze** - Verify no errors were introduced
+5. ✅ **Validate** - Test the changes work as expected
+6. 📊 **Store insights** - Document patterns and solutions
+
+**NEVER skip steps 1, 4, or 5. They are mandatory.**
+
+### 3.2. Consistency through Scaffolding
+- **ALWAYS** use scaffolding tools to create new project structures. This ensures consistency and adherence to architectural patterns.
+- **ALWAYS** analyze generated files immediately after scaffolding to understand their structure.
+- **To create a new feature:** Use the `generate_feature` tool, then analyze the generated files.
+- **To add endpoints to a feature:** Use the `generate_controller` tool, then analyze the generated controller.
+- **To add middleware to a feature:** Use the `generate_procedure` tool, then analyze the generated procedure.
+- **Manual creation is discouraged** as it can lead to inconsistencies. Analyze existing features only when scaffolding tools are insufficient or need to be extended.
+
+### 3.3. Strategic Planning and Delegation
+
+**Analysis Requirements for Delegation:**
+- Before delegating any task, **MUST** analyze all affected files to understand dependencies
+- Document file health status and any existing issues in delegation context
+- Include analysis results in delegation instructions
+- Re-analyze files after delegation completion to verify quality
+
+**Delegation Process:**
+- For complex features, **MANDATORY** evaluate opportunities for delegation.
+- Use `list_tasks` to understand the current workload and identify tasks that are independent and well-scoped.
+- **ALWAYS** analyze relevant files before delegation to provide proper context
+- Decompose complex problems into:
+    - **Strategic Tasks (Direct Execution):** Core architecture, security, and system-wide integrations that require my direct oversight.
+    - **Specialized Tasks (Agent Delegation):** Documentation, unit testing, and refactoring of isolated components that can be parallelized for efficiency.
+- Always use `monitor_agent_tasks` to coordinate and integrate delegated work.
+- **MANDATORY**: Re-analyze all files modified by delegated agents to ensure quality and consistency.
+
+### 3.4. Cross-Workflow Integration
+
+**UX/UI Task Integration:**
+- For UI/UX tasks, apply patterns from `ux-ui-workflow.mdc`
+- Use design tokens from `globals.css` for consistent theming
+- Follow Shadcn UI integration protocols for component development
+- Ensure accessibility patterns (WCAG 2.1 AA) are implemented
+
+**Front-End Task Integration:**
+- For React/Next.js tasks, apply patterns from `frontend-development.mdc`
+- Use Igniter.js client patterns for API integration
+- Follow presentation layer organization for component structure
+- Apply performance optimization patterns as specified
+
+**Workflow Coordination:**
+- **Planning**: Use `planning.mdc` for feature planning and task breakdown
+- **UX/UI**: Use `ux-ui-workflow.mdc` for design system and user experience
+- **Front-End**: Use `frontend-development.mdc` for React/Next.js patterns
+- **Development**: Use `development-workflow.mdc` for quality assurance and implementation standards
+
+## 4. Quality Assurance Protocol
+
+### 4.1. Continuous Validation
+- Use `analyze_file` before and after every file operation
+- Use API validation tools (`get_openapi_spec`, `make_api_request`) to test endpoints
+- Store insights and patterns using `store_memory` for future reference
+- Monitor for performance regressions and type safety issues
+
+### 4.2. Error Prevention Strategy
+- **Never ignore TypeScript errors** - fix them immediately
+- **Verify imports and exports** are correct after file modifications
+- **Test critical paths** after making changes
+- **Use proper error handling** in all procedures and controllers
+- **Validate API contracts** match implementation
+
+### 4.3. Knowledge Management
+- Store successful patterns and solutions in memory
+- Document architectural decisions and their rationale
+- Relate new memories to existing knowledge for better context
+- Build up a knowledge base of common issues and solutions
+
+### 4.4. Browser Testing Integration
+**MANDATORY BROWSER VALIDATION:**
+- **All back-end implementations** require Playwright browser testing before advancement
+- **Cannot proceed to next task/subtask** without successful browser validation
+- **Browser testing provides autonomous validation** similar to API testing workflow
+- **Use browser for comprehensive validation** of all implementations
+
+### 4.5. Research & Market Analysis Protocol
+**BROWSER RESEARCH FREEDOM:**
+- **Use browser freely** for accessing forums, documentation, sites, news, references
+- **Market research capability** to ensure most current and customizable solutions
+- **Technology updates** through browser access to latest information
+- **Community insights** from forums and discussion platforms

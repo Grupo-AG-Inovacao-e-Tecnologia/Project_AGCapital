@@ -1,26 +1,13 @@
-import {NextRequest} from "next/server"
-import {getUserBySession} from "./lib/auth";
+import { auth } from "@/lib/auth";
+import { path } from "@/lib/path";
 
-
-export async function proxy(request: NextRequest) {
-    if (
-        request.nextUrl.pathname.startsWith("/auth") &&
-        !request.nextUrl.pathname.startsWith("/auth/logout")
-    ) {
-        const user = await getUserBySession()
-        if (user) {
-            return Response.redirect(new URL("/profile", request.url))
-        }
-    }
-
-    if (request.nextUrl.pathname.startsWith("/profile")) {
-        const user = await getUserBySession()
-        if (!user) {
-            return Response.redirect(new URL("/auth/login", request.url))
-        }
-    }
-}
+export const proxy = auth((req) => {
+  if (!req.auth && req.nextUrl.pathname !== path.auth.login) {
+    const newUrl = new URL(path.auth.login, req.nextUrl.origin);
+    return Response.redirect(newUrl);
+  }
+});
 
 export const config = {
-    matcher: ["/api/:path*", "/dashboard/:path*", "/auth/:path*", "/profile/:path*"],
-}
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};

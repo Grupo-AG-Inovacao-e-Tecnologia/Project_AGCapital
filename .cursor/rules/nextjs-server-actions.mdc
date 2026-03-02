@@ -1,0 +1,195 @@
+---
+description: Next.js App Router, Server Actions e boas práticas de data fetching e mutações sem Igniter.
+globs: []
+alwaysApply: true
+---
+
+# Next.js App Router & Server Actions
+
+Esta regra define padrões para desenvolvimento com Next.js App Router, Server Actions e data fetching, **sem uso de Igniter.js**.
+
+## 1. Server Actions
+
+### 1.1 Definição e localização
+- **'use server'** no topo do arquivo que exporta funções server-only.
+- Preferir **actions em arquivos dedicados**: `src/features/[feature]/actions.ts` ou `src/app/[segment]/actions.ts`.
+- Nomes descritivos: `createBoard`, `updateUser`, `deleteItem`.
+
+### 1.2 Assinatura e retorno
+```ts
+// ✅ CORRETO - Retorno tipado e serializável
+'use server'
+
+import { revalidatePath } from 'next/cache'
+
+export type ActionResult<T = void> =
+  | { success: true; data: T }
+  | { success: false; error: string }
+
+export async function createBoard(prevState: unknown, formData: FormData): Promise<ActionResult<{ id: string }>> {
+  const title = formData.get('title')?.toString()
+  if (!title?.trim()) return { success: false, error: 'Title is required' }
+
+  // Lógica de negócio / DB
+  const board = await db.board.create({ data: { title: title.trim() } })
+  revalidatePath('/app/boards')
+  return { success: true, data: { id: board.id } }
+}
+```
+
+### 1.3 Validação
+- Validar entradas com **Zod** (ou schema de preferência) dentro da action.
+- Nunca confiar apenas em validação no cliente.
+
+```ts
+'use server'
+import { z } from 'zod'
+
+const CreateBoardSchema = z.object({
+  title: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
+})
+
+export async function createBoard(prevState: unknown, formData: FormData): Promise<ActionResult<{ id: string }>> {
+  const parsed = CreateBoardSchema.safeParse({
+    title: formData.get('title')?.toString(),
+    description: formData.get('description')?.toString() || undefined,
+  })
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.flatten().fieldErrors.title?.[0] ?? 'Invalid data' }
+  }
+  // ...
+}
+```
+
+### 1.4 Revalidação e redirecionamento
+- Usar **revalidatePath** ou **revalidateTag** após mutações para atualizar UI.
+- Usar **redirect()** após sucesso quando fizer sentido (ex.: criar recurso → ir para detalhe).
+
+```ts
+import { revalidatePath, revalidateTag } from 'next/cache'
+import { redirect } from 'next/navigation'
+
+export async function createBoard(prevState: unknown, formData: FormData) {
+  // ...
+  revalidatePath('/app/boards')
+  revalidateTag('boards')  // se usar fetch(..., { next: { tags: ['boards'] } })
+  redirect(`/app/boards/${board.id}`)
+}
+```
+
+## 2. Data fetching no App Router
+
+### 2.1 Server Components (padrão)
+- Buscar dados **no servidor** em async Server Components; evitar waterfall quando possível.
+- Preferir **fetch** com opções de cache do Next.js ou acesso direto ao DB (Prisma/Drizzle etc.).
+
+```tsx
+// ✅ CORRETO - Page/componente async no servidor
+export default async function BoardsPage() {
+  const boards = await db.board.findMany({ orderBy: { updatedAt: 'desc' } })
+  return <BoardsGrid boards={boards} />
+}
+```
+
+```tsx
+// ✅ CORRETO - fetch com cache/tags
+export default async function BoardList() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/boards`, {
+    next: { revalidate: 60, tags: ['boards'] },
+  })
+  if (!res.ok) throw new Error('Failed to fetch boards')
+  const boards = await res.json()
+  return <BoardsGrid boards={boards} />
+}
+```
+
+### 2.2 Rotas de API (Route Handlers)
+- Usar **Route Handlers** em `src/app/api/[...]/route.ts` quando precisar de endpoints HTTP (ex.: webhooks, integrações).
+- Respostas tipadas e status HTTP adequados.
+
+```ts
+// src/app/api/boards/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+
+const BodySchema = z.object({ title: z.string().min(1).max(100) })
+
+export async function GET() {
+  const boards = await db.board.findMany()
+  return NextResponse.json(boards)
+}
+
+export async function POST(request: NextRequest) {
+  const body = await request.json()
+  const parsed = BodySchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.flatten() },
+      { status: 400 }
+    )
+  }
+  const board = await db.board.create({ data: parsed.data })
+  return NextResponse.json(board, { status: 201 })
+}
+```
+
+## 3. Uso de Server Actions no cliente
+
+### 3.1 Formulários com useFormState (opcional)
+- Para formulários progressivos com estado de sucesso/erro, usar **useFormState** (React 19) ou **useActionState** com a action como argumento.
+
+```tsx
+'use client'
+
+import { useActionState } from 'react'
+import { createBoard } from './actions'
+
+export function CreateBoardForm() {
+  const [state, formAction, isPending] = useActionState(createBoard, null)
+
+  return (
+    <form action={formAction}>
+      <input name="title" required />
+      {state?.success === false && <p role="alert">{state.error}</p>}
+      <button type="submit" disabled={isPending}>Create</button>
+    </form>
+  )
+}
+```
+
+### 3.2 Chamada imperativa (transition)
+- Para ações disparadas por evento (ex.: botão “Delete”), usar **useTransition** e chamar a action diretamente.
+
+```tsx
+'use client'
+
+import { useTransition } from 'react'
+import { deleteBoard } from '@/features/boards/actions'
+
+export function DeleteButton({ boardId }: { boardId: string }) {
+  const [isPending, startTransition] = useTransition()
+
+  const handleDelete = () => {
+    startTransition(async () => {
+      const result = await deleteBoard(boardId)
+      if (result?.success) router.push('/app/boards')
+    })
+  }
+
+  return <button onClick={handleDelete} disabled={isPending}>Delete</button>
+}
+```
+
+## 4. Estrutura recomendada (sem Igniter)
+
+- **Actions**: `src/features/[feature]/actions.ts` com `'use server'`.
+- **Data access**: Repositories ou serviços em `src/features/[feature]/` ou `src/lib/`, chamados de dentro de Server Components ou Server Actions.
+- **API HTTP**: Apenas onde necessário em `src/app/api/`.
+- **Componentes**: Manter padrão Server por padrão; `'use client'` só para interatividade, formulários controlados ou hooks do cliente.
+
+## 5. Segurança e boas práticas
+
+- Nunca expor segredos ou tokens em Server Actions; usar variáveis de ambiente no servidor.
+- Validar e sanitizar todas as entradas; usar CSRF onde aplicável (Next.js trata em formulários com `action`).
+- Para dados sensíveis, garantir que apenas Server Components ou Route Handlers acessem o DB; não passar secrets para o cliente.

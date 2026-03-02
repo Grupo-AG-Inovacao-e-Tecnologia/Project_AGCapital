@@ -1,1 +1,0 @@
-export { isEmail } from "./validators"
