@@ -8,17 +8,17 @@ Aplicação web moderna para uso corporativo, com foco em autenticação segura 
 
 ## Stack tecnológica
 
-| Tecnologia        | Uso                          |
-|-------------------|------------------------------|
-| **Next.js 16**    | Framework React (App Router) |
-| **React 19**      | Interface                    |
-| **TypeScript**    | Tipagem                      |
-| **NextAuth v5**   | Autenticação                 |
-| **Prisma**        | ORM (SQLite em desenvolvimento) |
-| **Tailwind CSS 4**| Estilos                      |
-| **shadcn/ui**     | Componentes (New York, zinc) |
-| **React Hook Form + Zod** | Formulários e validação |
-| **Nodemailer**    | Envio de e-mail (Magic Link) |
+| Tecnologia                | Uso                             |
+| ------------------------- | ------------------------------- |
+| **Next.js 16**            | Framework React (App Router)    |
+| **React 19**              | Interface                       |
+| **TypeScript**            | Tipagem                         |
+| **NextAuth v5**           | Autenticação                    |
+| **Prisma**                | ORM (SQLite em desenvolvimento) |
+| **Tailwind CSS 4**        | Estilos                         |
+| **shadcn/ui**             | Componentes (New York, zinc)    |
+| **React Hook Form + Zod** | Formulários e validação         |
+| **Nodemailer**            | Envio de e-mail (Magic Link)    |
 
 ## Funcionalidades atuais
 
@@ -30,7 +30,7 @@ Aplicação web moderna para uso corporativo, com foco em autenticação segura 
 
 ## Roadmap
 
-- [ ] **Login com Microsoft** – integração com Azure AD / Entra ID
+- [x] **Login com Microsoft** – integração com Azure AD / Entra ID
 - [ ] **Integração com API HotsCool** – consumo da API da HotsCool no projeto
 
 ## Pré-requisitos
@@ -90,12 +90,12 @@ Acesse [http://localhost:3000](http://localhost:3000). A rota de login configura
 
 ## Scripts disponíveis
 
-| Comando        | Descrição                          |
-|----------------|------------------------------------|
-| `npm run dev`  | Sobe o servidor de desenvolvimento |
-| `npm run build`| Gera o Prisma Client e faz build   |
-| `npm run start`| Sobe a aplicação em produção       |
-| `npm run lint` | Executa o ESLint                   |
+| Comando         | Descrição                          |
+| --------------- | ---------------------------------- |
+| `npm run dev`   | Sobe o servidor de desenvolvimento |
+| `npm run build` | Gera o Prisma Client e faz build   |
+| `npm run start` | Sobe a aplicação em produção       |
+| `npm run lint`  | Executa o ESLint                   |
 
 ## Estrutura do projeto (resumo)
 
