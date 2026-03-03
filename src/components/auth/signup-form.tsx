@@ -8,7 +8,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { path } from "@/lib/path";
+import { paths } from "@/lib/paths";
 import Link from "next/link";
 
 export function SignupForm({
@@ -66,7 +66,7 @@ export function SignupForm({
             Criar conta com GitHub
           </Button>
           <FieldDescription className="px-6 text-center">
-            Já tem uma conta? <Link href={path.auth.login}>Entrar</Link>
+            Já tem uma conta? <Link href={paths.auth.login}>Entrar</Link>
           </FieldDescription>
         </Field>
       </FieldGroup>

@@ -9,7 +9,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { path } from "@/lib/path";
+import { paths } from "@/lib/paths";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
@@ -63,7 +63,7 @@ export function LoginLinkForm({
         </Field>
         <Field>
           <FieldDescription className="text-center">
-            Não tem uma conta? <Link href={path.auth.signup}>Criar conta</Link>
+            Não tem uma conta? <Link href={paths.auth.signup}>Criar conta</Link>
           </FieldDescription>
         </Field>
       </FieldGroup>
