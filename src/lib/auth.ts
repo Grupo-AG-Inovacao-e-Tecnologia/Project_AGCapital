@@ -5,18 +5,10 @@ import Google from "next-auth/providers/google";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
 import { prisma } from "./prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { path } from "@/lib/path";
+import { paths } from "@/lib/paths";
 
-/**
- * Para o link por e-mail funcionar você precisa:
- * 1. Variáveis de ambiente: AUTH_SECRET, EMAIL_SERVER e EMAIL_FROM
- *    Ex.: EMAIL_SERVER=smtp://user:pass@smtp.example.com:587
- *         EMAIL_FROM=noreply@seudominio.com
- * 2. Instalar: bun add nodemailer
- * 3. (Obrigatório para magic link) Configurar um database adapter em adapter:
- *    https://authjs.dev/getting-started/database
- */
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  debug: process.env.AUTH_DEBUG === "true",
   adapter: PrismaAdapter(prisma),
   providers: [
     Nodemailer({
@@ -32,16 +24,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google,
   ],
   pages: {
-    signIn: path.auth.loginLink,
-    signOut: path.auth.login,
-    error: path.auth.login,
-    verifyRequest: path.auth.loginLink,
-    newUser: path.home,
+    signIn: paths.auth.login,
+    signOut: paths.auth.login,
+    error: paths.auth.login,
+    verifyRequest: paths.auth.login,
+    newUser: paths.dashboard,
   },
   callbacks: {
     authorized: async ({ auth }) => {
-      // Logged in users are authenticated, otherwise redirect to login page
       return !!auth;
+    },
+    session: async ({ session, token }) => {
+      if (session?.user && token != null) {
+        session.user.id = token.sub ?? "";
+      }
+      return session;
     },
   },
 });
