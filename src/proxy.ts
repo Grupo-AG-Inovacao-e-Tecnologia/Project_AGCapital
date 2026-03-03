@@ -1,9 +1,14 @@
 import { auth } from "@/lib/auth";
-import { path } from "@/lib/path";
+import { paths } from "@/lib/paths";
 
 export const proxy = auth((req) => {
-  if (!req.auth && req.nextUrl.pathname !== path.auth.login) {
-    const newUrl = new URL(path.auth.login, req.nextUrl.origin);
+  if (
+    !req.auth &&
+    req.nextUrl.pathname !== paths.auth.login &&
+    // req.nextUrl.pathname !== paths.auth.signup &&
+    req.nextUrl.pathname !== paths.auth.loginLink
+  ) {
+    const newUrl = new URL(paths.auth.login, req.nextUrl.origin);
     return Response.redirect(newUrl);
   }
 });
