@@ -21,6 +21,8 @@ export const metadata: Metadata = {
   description: "Aplicativo interno para uso corporativo",
   icons: {
     icon: "/logo.png",
+    apple: "/logo.png",
+    shortcut: "/logo.png",
   },
 };
 
