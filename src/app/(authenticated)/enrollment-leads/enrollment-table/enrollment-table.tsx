@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { searchLeads } from '@/API/leads/leads';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { searchLeads } from "@/API/leads/leads";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -10,21 +10,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { TooltipAction } from '@/components/ui/tooltip-action';
-import { useMutation } from '@tanstack/react-query';
+} from "@/components/ui/table";
+import { TooltipAction } from "@/components/ui/tooltip-action";
+import { useMutation } from "@tanstack/react-query";
 import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
-import { ArrowUpDown, Loader2, Search, X } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
-import { toast } from 'sonner';
+} from "@tanstack/react-table";
+import { ArrowUpDown, Loader2, Search, X } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { toast } from "sonner";
 
-import { EnrollmentFormDialog } from './enrollment-form-dialog';
+import { EnrollmentFormDialog } from "./enrollment-form-dialog";
 
 export type LeadRow = {
   id: string;
@@ -44,8 +44,8 @@ type SearchResult = {
 
 const columns: ColumnDef<LeadRow>[] = [
   {
-    accessorKey: 'id',
-    header: 'ID',
+    accessorKey: "id",
+    header: "ID",
     cell: ({ row }) => (
       <TooltipAction title={String(row.original.id)} asChild>
         <span>{row.original.id}</span>
@@ -54,8 +54,8 @@ const columns: ColumnDef<LeadRow>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'nome',
-    header: 'Nome',
+    accessorKey: "nome",
+    header: "Nome",
     cell: ({ row }) => (
       <TooltipAction title={row.original.nome} asChild>
         <span>{row.original.nome}</span>
@@ -64,8 +64,8 @@ const columns: ColumnDef<LeadRow>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'email',
-    header: 'Email',
+    accessorKey: "email",
+    header: "Email",
     cell: ({ row }) => (
       <TooltipAction title={row.original.email} asChild>
         <span>{row.original.email}</span>
@@ -74,12 +74,12 @@ const columns: ColumnDef<LeadRow>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'telefone',
-    header: 'Telefone',
+    accessorKey: "telefone",
+    header: "Telefone",
     cell: ({ row }) => {
       const telefone = row.original.telefone
-        ? `${row.original.ddd || ''} ${row.original.telefone}`.trim()
-        : '-';
+        ? `${row.original.ddd || ""} ${row.original.telefone}`.trim()
+        : "-";
       return (
         <TooltipAction title={telefone} asChild>
           <span>{telefone}</span>
@@ -89,15 +89,15 @@ const columns: ColumnDef<LeadRow>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'actions',
-    header: 'Ações',
+    accessorKey: "actions",
+    header: "Ações",
     cell: ({ row }) => <EnrollmentFormDialog enrollment={row.original} />,
   },
 ];
 
 export function EnrollmentTable() {
   "use no memo";
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
 
   const { mutate: searchMutation, isPending: isSearching } = useMutation({
@@ -114,27 +114,27 @@ export function EnrollmentTable() {
           page: 0,
           timestamp: new Date().toISOString(),
         });
-        toast.info('Nenhum lead encontrado com os critérios informados');
+        toast.info("Nenhum lead encontrado com os critérios informados");
       }
     },
     onError: (error) => {
       const errorMessage =
-        error?.message || 'Erro ao buscar leads. Tente novamente.';
+        error?.message || "Erro ao buscar leads. Tente novamente.";
       toast.error(errorMessage);
-      console.error('Erro ao buscar leads:', error);
+      console.error("Erro ao buscar leads:", error);
     },
   });
 
   const handleSearch = () => {
     if (!searchTerm.trim()) {
-      toast.warning('Digite um termo para buscar (email, CPF ou telefone)');
+      toast.warning("Digite um termo para buscar (email, CPF ou telefone)");
       return;
     }
 
-    const cleanSearch = searchTerm.replace(/\D/g, '');
+    const cleanSearch = searchTerm.replace(/\D/g, "");
     const searchParams: Record<string, unknown> = {};
 
-    if (searchTerm.includes('@')) {
+    if (searchTerm.includes("@")) {
       searchParams.email = searchTerm.trim().toLowerCase();
     } else if (cleanSearch.length === 11) {
       searchParams.cpf = cleanSearch;
@@ -148,14 +148,12 @@ export function EnrollmentTable() {
   };
 
   const handleClearSearch = () => {
-    setSearchTerm('');
+    setSearchTerm("");
     setSearchResults(null);
   };
 
   const showLoading = isSearching;
-  const [sorting, setSorting] = useState<
-    { id: string; desc: boolean }[]
-  >([]);
+  const [sorting, setSorting] = useState<{ id: string; desc: boolean }[]>([]);
 
   // Usa dados da busca
   const tableData = useMemo(() => searchResults?.data || [], [searchResults]);
@@ -178,7 +176,7 @@ export function EnrollmentTable() {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold flex gap-2">
-          Grupos de Inscrição{' '}
+          Grupos de Inscrição{" "}
         </h2>
         <div className="flex items-center gap-2">
           <EnrollmentFormDialog />
@@ -197,7 +195,7 @@ export function EnrollmentTable() {
               setSearchTerm(value);
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 e.preventDefault();
                 e.stopPropagation();
                 handleSearch();
@@ -245,9 +243,9 @@ export function EnrollmentTable() {
           ) : (
             <Search className="mr-2 h-4 w-4" />
           )}
-          {isSearching ? 'Buscando...' : 'Buscar'}
+          {isSearching ? "Buscando..." : "Buscar"}
         </Button>
-        {searchResults && (
+        {/* {searchResults && (
           <Button
             type="button"
             variant="outline"
@@ -258,7 +256,7 @@ export function EnrollmentTable() {
           >
             Limpar busca
           </Button>
-        )}
+        )} */}
       </div>
       <div className="overflow-hidden rounded-lg border">
         <Table>
@@ -275,7 +273,7 @@ export function EnrollmentTable() {
                         >
                           {flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                           {header.column.getCanSort() && (
                             <ArrowUpDown className="h-4 w-4" />
@@ -288,7 +286,7 @@ export function EnrollmentTable() {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody className={'group'}>
+          <TableBody className={"group"}>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -299,7 +297,7 @@ export function EnrollmentTable() {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -312,8 +310,8 @@ export function EnrollmentTable() {
                   className="h-24 text-center"
                 >
                   {showLoading
-                    ? 'Carregando...'
-                    : 'Nenhum resultado encontrado'}
+                    ? "Carregando..."
+                    : "Nenhum resultado encontrado"}
                 </TableCell>
               </TableRow>
             )}

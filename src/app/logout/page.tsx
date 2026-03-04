@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { logout } from '@/API/auth/auth';
-import { Loader2 } from 'lucide-react';
-import { useEffect } from 'react';
+import { logout } from "@/API/auth/auth";
+import { Loader2 } from "lucide-react";
+import { useEffect } from "react";
 
 const LogoutPage = () => {
   useEffect(() => {
