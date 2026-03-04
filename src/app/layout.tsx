@@ -19,6 +19,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Grupo AG Capital",
   description: "Aplicativo interno para uso corporativo",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({
