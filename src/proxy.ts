@@ -1,16 +1,13 @@
+import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { paths } from "@/lib/paths";
 
 export const proxy = auth((req) => {
-  if (
-    !req.auth &&
-    req.nextUrl.pathname !== paths.auth.login &&
-    // req.nextUrl.pathname !== paths.auth.signup &&
-    req.nextUrl.pathname !== paths.auth.loginLink
-  ) {
+  if (!req.auth && req.nextUrl.pathname !== paths.auth.login) {
     const newUrl = new URL(paths.auth.login, req.nextUrl.origin);
-    return Response.redirect(newUrl);
+    return NextResponse.redirect(newUrl);
   }
+  return NextResponse.next();
 });
 
 export const config = {
