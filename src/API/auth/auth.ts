@@ -24,6 +24,8 @@ export const logout = async () => {
   const cookiesList = await cookies();
   cookiesList.delete("access_token");
   cookiesList.delete("auth_token");
+  cookiesList.delete("authjs.session-token");
+  cookiesList.delete("__Secure-authjs.session-token");
   revalidatePath(paths.home);
   redirect(paths.auth.login);
 };
