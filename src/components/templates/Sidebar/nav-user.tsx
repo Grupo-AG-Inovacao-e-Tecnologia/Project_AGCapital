@@ -83,8 +83,8 @@ export function NavUser({ user }: { user: User }) {
                 <IconNotification />
                 Notifications
               </DropdownMenuItem>
-            </DropdownMenuGroup> */}
-            <DropdownMenuSeparator />
+            </DropdownMenuGroup> 
+            <DropdownMenuSeparator /> */}
             <DropdownMenuItem>
               <a
                 href={paths.auth.logout}

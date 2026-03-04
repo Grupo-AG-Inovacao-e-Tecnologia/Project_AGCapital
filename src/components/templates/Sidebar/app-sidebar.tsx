@@ -11,15 +11,26 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { sidebarItems } from "@/resources/sidebar-items";
+import { sidebarItems, type SidebarUser } from "@/resources/sidebar-items";
 import Image from "next/image";
 
-export function AppSidebar({ ...props }) {
+const defaultUser: SidebarUser = {
+  name: "Usuário",
+  email: "",
+  avatar: "/logo.png",
+};
+
+export function AppSidebar({
+  user,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { user?: SidebarUser | null }) {
+  const sidebarUser = user ?? defaultUser;
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem className="w-full px-4 mb-4">
+          <SidebarMenuItem className="w-full px-15 mb-[-20px]">
             <Image
               src="/logo.png"
               alt="FranceTech"
@@ -30,7 +41,7 @@ export function AppSidebar({ ...props }) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className="px-4">
+      <SidebarContent className="px-2">
         <NavMain items={sidebarItems.navMain} />
         {sidebarItems.sections.map((section) => (
           <NavSection
@@ -41,7 +52,7 @@ export function AppSidebar({ ...props }) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={sidebarItems.user} />
+        <NavUser user={sidebarUser} />
       </SidebarFooter>
     </Sidebar>
   );

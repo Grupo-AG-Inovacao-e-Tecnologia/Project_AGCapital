@@ -16,12 +16,13 @@ export type SidebarSection = {
   }[];
 };
 
+export type SidebarUser = {
+  name: string;
+  email: string;
+  avatar: string;
+};
+
 export const sidebarItems = {
-  user: {
-    name: "FranceTech",
-    email: "francetech@gmail.com",
-    avatar: "/logo.png",
-  },
   navMain: [
     {
       name: "Dashboard",
