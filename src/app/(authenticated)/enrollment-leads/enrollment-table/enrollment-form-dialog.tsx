@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { createEnrollmentGroup } from '@/API/leads/leads';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { createEnrollmentGroup } from "@/API/leads/leads";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -18,29 +18,26 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { TooltipAction } from '@/components/ui/tooltip-action';
-import { cn } from '@/lib/utils';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { PencilIcon, Plus } from 'lucide-react';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import * as zod from 'zod';
+} from "@/components/ui/select";
+import { TooltipAction } from "@/components/ui/tooltip-action";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { PencilIcon, Plus } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as zod from "zod";
 
-const EQUIPE_MAPPING: Record<
-  string,
-  [number | null, number | null]
-> = {
+const EQUIPE_MAPPING: Record<string, [number | null, number | null]> = {
   C1: [210, 493],
   C2: [2250, 5599],
   C3: [211, 494],
@@ -51,7 +48,7 @@ const EQUIPE_MAPPING: Record<
 };
 
 function getDepartamentoAndCargoByEquipe(
-  equipeCode: string
+  equipeCode: string,
 ): [number | null, number | null] {
   return EQUIPE_MAPPING[equipeCode] ?? [null, null];
 }
@@ -59,43 +56,43 @@ function getDepartamentoAndCargoByEquipe(
 const formSchema = zod
   .object({
     codigo_externo: zod.string().optional(),
-    url: zod.string().url('URL inválida').optional().or(zod.literal('')),
-    nome: zod.string().min(1, 'Nome é obrigatório'),
-    email: zod.string().email('Email inválido'),
+    url: zod.string().url("URL inválida").optional().or(zod.literal("")),
+    nome: zod.string().min(1, "Nome é obrigatório"),
+    email: zod.string().email("Email inválido"),
     emails: zod.string().optional(),
     ddd: zod
       .string()
-      .regex(/^\d{2}$/, 'DDD deve ter 2 dígitos')
+      .regex(/^\d{2}$/, "DDD deve ter 2 dígitos")
       .optional()
-      .or(zod.literal('')),
+      .or(zod.literal("")),
     telefone: zod
       .string()
-      .regex(/^\d{8,9}$/, 'Telefone deve ter 8 ou 9 dígitos')
+      .regex(/^\d{8,9}$/, "Telefone deve ter 8 ou 9 dígitos")
       .optional()
-      .or(zod.literal('')),
+      .or(zod.literal("")),
     cpf: zod.string().optional(),
     data_nascimento: zod
       .string()
-      .regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Data deve estar no formato DD/MM/AAAA')
+      .regex(/^\d{2}\/\d{2}\/\d{4}$/, "Data deve estar no formato DD/MM/AAAA")
       .optional()
-      .or(zod.literal('')),
+      .or(zod.literal("")),
     cep: zod
       .string()
-      .regex(/^\d{8}$/, 'CEP deve ter 8 dígitos')
+      .regex(/^\d{8}$/, "CEP deve ter 8 dígitos")
       .optional()
-      .or(zod.literal('')),
+      .or(zod.literal("")),
     endereco: zod.string().optional(),
     numero: zod.string().optional(),
     bairro: zod.string().optional(),
     estado: zod
       .string()
-      .length(2, 'Estado deve ter 2 caracteres (sigla)')
+      .length(2, "Estado deve ter 2 caracteres (sigla)")
       .optional()
-      .or(zod.literal('')),
+      .or(zod.literal("")),
     cidade: zod.string().optional(),
     complemento: zod.string().optional(),
-    id_pais: zod.number().min(1, 'País é obrigatório'),
-    id_unidade: zod.number().min(1, 'Unidade é obrigatória'),
+    id_pais: zod.number().min(1, "País é obrigatório"),
+    id_unidade: zod.number().min(1, "Unidade é obrigatória"),
     time_canais: zod.string().optional(),
     id_departamento: zod.number().min(1).nullable().optional(),
     id_cargo: zod.number().min(1).nullable().optional(),
@@ -104,11 +101,11 @@ const formSchema = zod
   .refine(
     (data) => {
       // Se time_canais for C5, id_departamento e id_cargo podem ser null
-      if (data.time_canais === 'C5') {
+      if (data.time_canais === "C5") {
         return true;
       }
       // Caso contrário, id_departamento e id_cargo são obrigatórios
-      if (data.time_canais && data.time_canais !== '') {
+      if (data.time_canais && data.time_canais !== "") {
         return (
           data.id_departamento !== null &&
           data.id_departamento !== undefined &&
@@ -125,9 +122,9 @@ const formSchema = zod
       );
     },
     {
-      message: 'Departamento e Cargo são obrigatórios',
-      path: ['id_departamento'],
-    }
+      message: "Departamento e Cargo são obrigatórios",
+      path: ["id_departamento"],
+    },
   );
 
 export type EnrollmentFormValues = zod.infer<typeof formSchema>;
@@ -168,25 +165,25 @@ export function EnrollmentFormDialog({
 
   const form = useForm({
     defaultValues: {
-      codigo_externo: enrollment?.codigo_externo || '',
-      url: enrollment?.url || '',
-      nome: enrollment?.nome || '',
-      email: enrollment?.email || '',
-      emails: enrollment?.emails || '',
-      ddd: enrollment?.ddd?.toString() || '',
-      telefone: enrollment?.telefone?.toString() || '',
-      cpf: enrollment?.cpf || '',
-      data_nascimento: enrollment?.data_nascimento || '',
-      cep: enrollment?.cep?.toString() || '',
-      endereco: enrollment?.endereco || '',
-      numero: enrollment?.numero?.toString() || '',
-      bairro: enrollment?.bairro || '',
-      estado: enrollment?.estado || '',
-      cidade: enrollment?.cidade || '',
-      complemento: enrollment?.complemento || '',
+      codigo_externo: enrollment?.codigo_externo || "",
+      url: enrollment?.url || "",
+      nome: enrollment?.nome || "",
+      email: enrollment?.email || "",
+      emails: enrollment?.emails || "",
+      ddd: enrollment?.ddd?.toString() || "",
+      telefone: enrollment?.telefone?.toString() || "",
+      cpf: enrollment?.cpf || "",
+      data_nascimento: enrollment?.data_nascimento || "",
+      cep: enrollment?.cep?.toString() || "",
+      endereco: enrollment?.endereco || "",
+      numero: enrollment?.numero?.toString() || "",
+      bairro: enrollment?.bairro || "",
+      estado: enrollment?.estado || "",
+      cidade: enrollment?.cidade || "",
+      complemento: enrollment?.complemento || "",
       id_pais: enrollment?.id_pais || 1,
       id_unidade: enrollment?.id_unidade || 135,
-      time_canais: enrollment?.time_canais || '',
+      time_canais: enrollment?.time_canais || "",
       id_departamento: enrollment?.id_departamento,
       id_cargo: enrollment?.id_cargo,
       enviar_email_notificacao: enrollment?.enviar_email_notificacao === 1,
@@ -198,23 +195,29 @@ export function EnrollmentFormDialog({
     mutationFn: createEnrollmentGroup,
     onSuccess: () => {
       toast.success(
-        enrollment ? 'Lead atualizado com sucesso!' : 'Lead criado com sucesso!'
+        enrollment
+          ? "Parceiro atualizado com sucesso!"
+          : "Parceiro criado com sucesso!",
       );
       form.reset();
       setIsOpen(false);
     },
     onError: () => {
-      toast.error('Erro ao salvar lead. Verifique os dados e tente novamente.');
+      toast.error(
+        "Erro ao salvar parceiro. Verifique os dados e tente novamente.",
+      );
     },
   });
 
   const onSubmit = (data: EnrollmentFormValues) => {
-    const { time_canais: _time_canais, ...dataToSend } = data;
+    const dataToSend = Object.fromEntries(
+      Object.entries(data).filter(([key]) => key !== "time_canais"),
+    );
     const cleanedData = Object.fromEntries(
       Object.entries(dataToSend).map(([key, value]) => [
         key,
-        value === '' ? undefined : value,
-      ])
+        value === "" ? undefined : value,
+      ]),
     );
     createMutation(cleanedData);
   };
@@ -222,7 +225,7 @@ export function EnrollmentFormDialog({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <TooltipAction
-        title={enrollment ? 'Editar lead' : 'Criar novo lead'}
+        title={enrollment ? "Editar parceiro" : "Criar novo parceiro"}
         asChild
       >
         <DialogTrigger asChild>
@@ -233,7 +236,7 @@ export function EnrollmentFormDialog({
           ) : (
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              Novo Lead
+              Novo Parceiro
             </Button>
           )}
         </DialogTrigger>
@@ -241,16 +244,17 @@ export function EnrollmentFormDialog({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {enrollment ? 'Editar Lead' : 'Cadastrar Novo Lead'}
+            {enrollment ? "Editar Parceiro" : "Cadastrar Novo Parceiro"}
           </DialogTitle>
           <DialogDescription>
-            Preencha os dados do lead. Campos marcados com * são obrigatórios.
+            Preencha os dados do parceiro. Campos marcados com * são
+            obrigatórios.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className={cn('flex flex-col gap-6 space-y-6')}
+            className={cn("flex flex-col gap-6 space-y-6")}
           >
             <div className="grid gap-6 md:grid-cols-2">
               <FormField
@@ -331,7 +335,7 @@ export function EnrollmentFormDialog({
                         {...field}
                         onChange={(e) =>
                           field.onChange(
-                            e.target.value ? Number(e.target.value) : undefined
+                            e.target.value ? Number(e.target.value) : undefined,
                           )
                         }
                       />
@@ -352,8 +356,8 @@ export function EnrollmentFormDialog({
                         field.onChange(value);
                         const [id_departamento, id_cargo] =
                           getDepartamentoAndCargoByEquipe(value);
-                        form.setValue('id_departamento', id_departamento);
-                        form.setValue('id_cargo', id_cargo);
+                        form.setValue("id_departamento", id_departamento);
+                        form.setValue("id_cargo", id_cargo);
                       }}
                       defaultValue={field.value}
                     >
@@ -390,10 +394,10 @@ export function EnrollmentFormDialog({
                         type="number"
                         placeholder="ID do departamento"
                         {...field}
-                        value={field.value ?? ''}
+                        value={field.value ?? ""}
                         onChange={(e) =>
                           field.onChange(
-                            e.target.value ? Number(e.target.value) : null
+                            e.target.value ? Number(e.target.value) : null,
                           )
                         }
                       />
@@ -416,10 +420,10 @@ export function EnrollmentFormDialog({
                         type="number"
                         placeholder="ID do cargo"
                         {...field}
-                        value={field.value ?? ''}
+                        value={field.value ?? ""}
                         onChange={(e) =>
                           field.onChange(
-                            e.target.value ? Number(e.target.value) : null
+                            e.target.value ? Number(e.target.value) : null,
                           )
                         }
                       />
@@ -490,7 +494,7 @@ export function EnrollmentFormDialog({
                         maxLength={2}
                         {...field}
                         onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '');
+                          const value = e.target.value.replace(/\D/g, "");
                           field.onChange(value);
                         }}
                       />
@@ -512,7 +516,7 @@ export function EnrollmentFormDialog({
                         maxLength={9}
                         {...field}
                         onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '');
+                          const value = e.target.value.replace(/\D/g, "");
                           field.onChange(value);
                         }}
                       />
@@ -533,10 +537,10 @@ export function EnrollmentFormDialog({
                         placeholder="000.000.000-00"
                         {...field}
                         onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '');
+                          const value = e.target.value.replace(/\D/g, "");
                           const formatted = value.replace(
                             /(\d{3})(\d{3})(\d{3})(\d{2})/,
-                            '$1.$2.$3-$4'
+                            "$1.$2.$3-$4",
                           );
                           field.onChange(formatted);
                         }}
@@ -559,10 +563,10 @@ export function EnrollmentFormDialog({
                         maxLength={10}
                         {...field}
                         onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '');
+                          const value = e.target.value.replace(/\D/g, "");
                           const formatted = value.replace(
                             /(\d{2})(\d{2})(\d{4})/,
-                            '$1/$2/$3'
+                            "$1/$2/$3",
                           );
                           field.onChange(formatted);
                         }}
@@ -585,7 +589,7 @@ export function EnrollmentFormDialog({
                         maxLength={8}
                         {...field}
                         onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '');
+                          const value = e.target.value.replace(/\D/g, "");
                           field.onChange(value);
                         }}
                       />
@@ -622,7 +626,7 @@ export function EnrollmentFormDialog({
                         {...field}
                         onChange={(e) =>
                           field.onChange(
-                            e.target.value ? Number(e.target.value) : undefined
+                            e.target.value ? Number(e.target.value) : undefined,
                           )
                         }
                       />
@@ -700,14 +704,14 @@ export function EnrollmentFormDialog({
               control={form.control}
               name="enviar_email_notificacao"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
+                <FormItem className="flex flex-row items-center space-x-3 rounded-md border p-4">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <div className="space-y-1 leading-none">
+                  <div className="leading-none">
                     <FormLabel className="mt-0! cursor-pointer">
                       Enviar e-mail de boas-vindas
                     </FormLabel>
@@ -718,10 +722,14 @@ export function EnrollmentFormDialog({
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full cursor-pointer"
               disabled={isLoading}
             >
-              {isLoading ? 'Salvando...' : enrollment ? 'Atualizar Lead' : 'Criar Lead'}
+              {isLoading
+                ? "Salvando..."
+                : enrollment
+                  ? "Atualizar Parceiro"
+                  : "Criar Parceiro"}
             </Button>
           </form>
         </Form>

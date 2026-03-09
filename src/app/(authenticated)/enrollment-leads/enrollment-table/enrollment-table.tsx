@@ -21,7 +21,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { ArrowUpDown, Loader2, Search, X } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { EnrollmentFormDialog } from "./enrollment-form-dialog";
@@ -32,6 +32,7 @@ export type LeadRow = {
   email: string;
   ddd?: string;
   telefone?: string;
+  createdAt: string;
   [key: string]: unknown;
 };
 
@@ -89,6 +90,15 @@ const columns: ColumnDef<LeadRow>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "createdAt",
+    header: "Data de criação",
+    cell: ({ row }) => (
+      <TooltipAction title={row.original.createdAt} asChild>
+        <span>{row.original.createdAt}</span>
+      </TooltipAction>
+    ),
+  },
+  {
     accessorKey: "actions",
     header: "Ações",
     cell: ({ row }) => <EnrollmentFormDialog enrollment={row.original} />,
@@ -106,7 +116,7 @@ export function EnrollmentTable() {
     onSuccess: (result) => {
       if (result.data && result.data.length > 0) {
         setSearchResults(result);
-        toast.success(`${result.data.length} lead(s) encontrado(s)`);
+        toast.success(`${result.data.length} parceiro(s) encontrado(s)`);
       } else {
         setSearchResults({
           data: [],
@@ -114,14 +124,14 @@ export function EnrollmentTable() {
           page: 0,
           timestamp: new Date().toISOString(),
         });
-        toast.info("Nenhum lead encontrado com os critérios informados");
+        toast.info("Nenhum parceiro encontrado com os critérios informados");
       }
     },
     onError: (error) => {
       const errorMessage =
-        error?.message || "Erro ao buscar leads. Tente novamente.";
+        error?.message || "Erro ao buscar parceiros. Tente novamente.";
       toast.error(errorMessage);
-      console.error("Erro ao buscar leads:", error);
+      console.error("Erro ao buscar parceiros:", error);
     },
   });
 
@@ -245,18 +255,6 @@ export function EnrollmentTable() {
           )}
           {isSearching ? "Buscando..." : "Buscar"}
         </Button>
-        {/* {searchResults && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleClearSearch();
-            }}
-          >
-            Limpar busca
-          </Button>
-        )} */}
       </div>
       <div className="overflow-hidden rounded-lg border">
         <Table>
