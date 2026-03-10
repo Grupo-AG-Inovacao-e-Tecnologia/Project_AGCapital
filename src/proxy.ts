@@ -3,10 +3,20 @@ import { auth } from "@/lib/auth";
 import { paths } from "@/lib/paths";
 
 export const proxy = auth((req) => {
-  if (!req.auth && req.nextUrl.pathname !== paths.auth.login) {
-    const newUrl = new URL(paths.auth.login, req.nextUrl.origin);
-    return NextResponse.redirect(newUrl);
+  const { pathname } = req.nextUrl;
+
+  if (!req.auth) {
+    if (pathname !== paths.auth.login) {
+      const newUrl = new URL(paths.auth.login, req.nextUrl.origin);
+      return NextResponse.redirect(newUrl);
+    }
+    return NextResponse.next();
   }
+
+  if (pathname === paths.home) {
+    return NextResponse.redirect(new URL(paths.dashboard, req.nextUrl.origin));
+  }
+
   return NextResponse.next();
 });
 
