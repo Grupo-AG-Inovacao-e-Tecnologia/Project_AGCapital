@@ -25,6 +25,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { EnrollmentFormDialog } from "./enrollment-form-dialog";
+import { format } from "date-fns";
 
 export type LeadRow = {
   id: string;
@@ -32,7 +33,8 @@ export type LeadRow = {
   email: string;
   ddd?: string;
   telefone?: string;
-  createdAt: string;
+  data_cadastro: string;
+  ultimo_login: string;
   [key: string]: unknown;
 };
 
@@ -90,13 +92,30 @@ const columns: ColumnDef<LeadRow>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "createdAt",
+    accessorKey: "data_cadastro",
     header: "Data de criação",
     cell: ({ row }) => (
-      <TooltipAction title={row.original.createdAt} asChild>
-        <span>{row.original.createdAt}</span>
+      <TooltipAction
+        title={format(row.original.data_cadastro, "dd/MM/yyyy")}
+        asChild
+      >
+        <span>{format(row.original.data_cadastro, "dd/MM/yyyy")}</span>
       </TooltipAction>
     ),
+    enableHiding: false,
+  },
+  {
+    accessorKey: "ultimo_login",
+    header: "Último login",
+    cell: ({ row }) => (
+      <TooltipAction
+        title={format(row.original.ultimo_login, "dd/MM/yyyy")}
+        asChild
+      >
+        <span>{format(row.original.ultimo_login, "dd/MM/yyyy")}</span>
+      </TooltipAction>
+    ),
+    enableHiding: false,
   },
   {
     accessorKey: "actions",
