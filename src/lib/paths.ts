@@ -10,7 +10,6 @@ export const paths = Object.freeze({
   home: "/",
   dashboard: "/dashboard",
   enrollmentLeads: "/enrollment-leads",
-  reports: "#",
-  chat: "#",
-  employees: "#",
+  whatsapp: "/whatsapp",
+  reports: "/reports",
 });

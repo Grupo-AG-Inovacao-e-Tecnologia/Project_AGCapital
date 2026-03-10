@@ -1,9 +1,8 @@
 import { paths } from "@/lib/paths";
 import {
+  IconBrandWhatsapp,
+  IconChartBar,
   IconDashboard,
-  IconMessage,
-  IconReport,
-  IconUsers,
   IconUserPlus,
 } from "@tabler/icons-react";
 
@@ -30,24 +29,19 @@ export const sidebarItems = {
       icon: IconDashboard,
     },
     {
-      name: "Enrollment Leads",
+      name: "Cadastro UniAG",
       url: paths.enrollmentLeads,
       icon: IconUserPlus,
     },
     {
+      name: "WhatsApp",
+      url: paths.whatsapp,
+      icon: IconBrandWhatsapp,
+    },
+    {
       name: "Relatórios",
       url: paths.reports,
-      icon: IconReport,
-    },
-    {
-      name: "Chat",
-      url: paths.chat,
-      icon: IconMessage,
-    },
-    {
-      name: "Funcionários",
-      url: paths.employees,
-      icon: IconUsers,
+      icon: IconChartBar,
     },
   ],
   sections: [] as SidebarSection[],
