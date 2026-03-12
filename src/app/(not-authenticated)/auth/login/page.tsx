@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { LoginForm } from "@/components/auth/login-form";
+import { ThemeLogo } from "@/components/templates/ThemeSwitcher/theme-logo";
 
 export default function LoginPage() {
   return (
@@ -11,13 +12,7 @@ export default function LoginPage() {
             href="https://agcapital.com.br"
             className="flex items-center gap-2 font-medium"
           >
-            <Image
-              src="/logo.png"
-              alt="Grupo AG Capital"
-              width={200}
-              height={200}
-              className="w-full object-cover"
-            />
+            <ThemeLogo />
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
@@ -27,10 +22,10 @@ export default function LoginPage() {
         </div>
       </div>
       <div className="bg-muted relative hidden lg:block">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="https://i.pinimg.com/736x/64/54/ae/6454ae91eb3a58e151efce7e1121c14a.jpg"
-          alt="Image"
+        <Image
+          src="/auth.png"
+          alt="Casa AG Capital"
+          fill
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>

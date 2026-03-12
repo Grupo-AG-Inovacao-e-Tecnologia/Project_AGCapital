@@ -1,6 +1,6 @@
 import { GalleryVerticalEnd } from "lucide-react";
-
 import { LoginLinkForm } from "@/components/auth/login-link-form";
+import { ThemeLogo } from "@/components/templates/ThemeSwitcher/theme-logo";
 
 export default function LoginLinkPage() {
   return (
@@ -21,12 +21,7 @@ export default function LoginLinkPage() {
         </div>
       </div>
       <div className="bg-muted relative hidden lg:block">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="https://i.pinimg.com/736x/64/54/ae/6454ae91eb3a58e151efce7e1121c14a.jpg"
-          alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
+        <ThemeLogo />
       </div>
     </div>
   );

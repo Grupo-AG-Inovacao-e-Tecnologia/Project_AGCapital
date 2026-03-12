@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { sidebarItems, type SidebarUser } from "@/resources/sidebar-items";
-import Image from "next/image";
+import { ThemeLogo } from "../ThemeSwitcher/theme-logo";
 
 const defaultUser: SidebarUser = {
   name: "Usuário",
@@ -31,10 +31,8 @@ export function AppSidebar({
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="w-full px-15 mb-[-20px]">
-            <Image
-              src="/logo.png"
-              alt="FranceTech"
-              width={400}
+            <ThemeLogo
+              width={200}
               height={200}
               className="w-full object-cover"
             />
