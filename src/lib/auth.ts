@@ -1,5 +1,4 @@
 import NextAuth from "next-auth";
-import Nodemailer from "next-auth/providers/nodemailer";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
@@ -15,10 +14,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     updateAge: 60 * 60 * 24, // 24 hours
   },
   providers: [
-    Nodemailer({
-      server: process.env.EMAIL_SERVER,
-      from: process.env.EMAIL_FROM,
-    }),
     MicrosoftEntraID({
       clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID,
       clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET,
