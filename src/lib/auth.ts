@@ -10,6 +10,10 @@ import { paths } from "@/lib/paths";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: process.env.AUTH_DEBUG === "true",
   adapter: PrismaAdapter(prisma),
+  session: {
+    maxAge: 60 * 60 * 24 * 2, // 2 days
+    updateAge: 60 * 60 * 24, // 24 hours
+  },
   providers: [
     Nodemailer({
       server: process.env.EMAIL_SERVER,
