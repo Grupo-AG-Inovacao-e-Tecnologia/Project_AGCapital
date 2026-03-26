@@ -33,12 +33,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     authorized: async ({ auth }) => {
       return !!auth;
     },
+    // jwt: async ({ token, account }) => {
+    //   if (account) {
+    //     token.access_token = account.access_token;
+    //     token.refresh_token = account.refresh_token;
+    //     token.expires_at = account.expires_at;
+    //   }
+    //   return token;
+    // },
     session: async ({ session, token, user }) => {
       if (session?.user && token != null) {
         session.user.id = token.sub ?? "";
         session.user.name = user.name;
         session.user.email = user.email;
         session.user.image = user.image;
+        // session.accessToken = token.access_token as string;
       }
       return session;
     },
