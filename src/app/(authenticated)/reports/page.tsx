@@ -7,10 +7,14 @@ export default async function Page() {
   return (
     <>
       <SiteHeader title="Relatórios" />
-      <div className="flex-1 justify-center items-center flex">
+      <div className="flex-1 justify-center items-center flex flex-col">
         <h1 className="text-5xl font-bold capitalize">Relatórios</h1>
-        <p>{session?.accessToken ?? "Não autenticado"}</p>
-        <p>{listMessages()}</p>
+        <p className="text-muted-foreground text-sm">
+          {session?.session_token ?? "Sem sessão"}
+        </p>
+        <pre className="mt-4 max-w-full overflow-auto text-xs">
+          {JSON.stringify(await listMessages(), null, 2)}
+        </pre>
       </div>
     </>
   );

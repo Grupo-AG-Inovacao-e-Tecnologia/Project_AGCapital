@@ -1,14 +1,14 @@
 import { auth } from "@/lib/auth";
 
-export async function listMessages(): Promise<any> {
+export async function listMessages() {
   const session = await auth();
-
+  console.log(session?.session_token);
   const res = await fetch("https://graph.microsoft.com/v1.0/me/messages", {
+    method: "GET",
     headers: {
-      method: "GET",
-      Authorization: `Bearer ${session?.accessToken}`,
+      Authorization: `Bearer ${session?.session_token}`,
     },
   });
-
-  return await res.json();
+  console.log(res);
+  return res;
 }
