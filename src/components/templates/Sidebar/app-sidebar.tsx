@@ -17,7 +17,7 @@ import { ThemeLogo } from "../ThemeSwitcher/theme-logo";
 const defaultUser: SidebarUser = {
   name: "Usuário",
   email: "",
-  avatar: "/logo.png",
+  avatar: "/logo_dark.png",
 };
 
 export function AppSidebar({
