@@ -20,9 +20,9 @@ export const metadata: Metadata = {
   title: "Grupo AG Capital",
   description: "Aplicativo interno para uso corporativo",
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
-    shortcut: "/logo.png",
+    icon: "/logo_dark.png",
+    apple: "/logo_dark.png",
+    shortcut: "/logo_dark.png",
   },
 };
 
