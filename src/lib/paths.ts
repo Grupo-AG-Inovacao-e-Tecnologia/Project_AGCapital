@@ -7,7 +7,7 @@ export const paths = Object.freeze({
     logout: "/logout",
   },
 
-  home: "/",
+  root: "/",
   dashboard: "/dashboard",
   enrollmentLeads: "/enrollment-leads",
   whatsapp: "/whatsapp",
