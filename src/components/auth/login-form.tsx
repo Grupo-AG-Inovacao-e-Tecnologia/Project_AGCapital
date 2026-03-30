@@ -23,7 +23,7 @@ export function LoginForm({
             type="button"
             className="w-full"
             onClick={() =>
-              signIn("microsoft-entra-id", { callbackUrl: paths.home })
+              signIn("microsoft-entra-id", { callbackUrl: paths.root })
             }
           >
             <svg

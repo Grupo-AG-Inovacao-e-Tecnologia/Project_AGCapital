@@ -25,7 +25,7 @@ export const sidebarItems = {
   navMain: [
     {
       name: "Dashboard",
-      url: paths.home,
+      url: paths.root,
       icon: IconDashboard,
     },
     {
