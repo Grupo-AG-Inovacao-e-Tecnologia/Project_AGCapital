@@ -110,12 +110,16 @@ const columns: ColumnDef<LeadRow>[] = [
     cell: ({ row }) => (
       <TooltipAction
         title={
-          format(row.original.ultimo_login, "dd/MM/yyyy") || "Nunca acessou"
+          row.original.ultimo_login === null
+            ? "Nunca acessou"
+            : format(row.original.ultimo_login, "dd/MM/yyyy")
         }
         asChild
       >
         <span>
-          {format(row.original.ultimo_login, "dd/MM/yyyy") || "Nunca acessou"}
+          {row.original.ultimo_login === null
+            ? "Nunca acessou"
+            : format(row.original.ultimo_login, "dd/MM/yyyy")}
         </span>
       </TooltipAction>
     ),
