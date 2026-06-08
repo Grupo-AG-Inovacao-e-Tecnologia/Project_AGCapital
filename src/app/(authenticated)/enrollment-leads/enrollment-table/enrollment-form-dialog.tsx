@@ -42,7 +42,7 @@ const EQUIPE_MAPPING: Record<string, [number | null, number | null]> = {
   C2: [2250, 5599],
   C3: [211, 494],
   C4: [212, 495],
-  C5: [null, null],
+  C5: [3411, 9628],
   C6: [213, 496],
   Incubadora: [3026, 6657],
 };
