@@ -1,11 +1,12 @@
 "use server";
 
 import { z } from "zod";
-import { POST } from "../APIservice";
+import { POST, PUT } from "../APIservice";
 
 const ENDPOINTS = {
   ENROLLMENT_GROUPS: "/leads/enrollment/groups",
   SEARCH: (page: number) => `/leads/search/${page}`,
+  UPDATE: (id: number) => `/leads/${id}`,
 } as const;
 
 const EnrollmentSchema = z
@@ -77,6 +78,78 @@ export async function createEnrollmentGroup(data: unknown) {
 
   try {
     return await POST(ENDPOINTS.ENROLLMENT_GROUPS, body);
+  } catch (err) {
+    throw new Error(getApiError(err));
+  }
+}
+
+const UpdateLeadSchema = z
+  .object({
+    codigo_externo: z.string().optional(),
+    url: z.string().optional(),
+    nome: z.string().min(1, "Nome é obrigatório"),
+    email: z.string().email("Email inválido"),
+    emails: z.string().optional(),
+    ddd: z.union([z.string(), z.number()]).optional(),
+    telefone: z.union([z.string(), z.number()]).optional(),
+    cpf: z.string().optional(),
+    data_nascimento: z.string().optional(),
+    cep: z.union([z.string(), z.number()]).optional(),
+    endereco: z.string().optional(),
+    numero: z.union([z.string(), z.number()]).optional(),
+    bairro: z.string().optional(),
+    estado: z.string().optional(),
+    cidade: z.string().optional(),
+    complemento: z.string().optional(),
+    id_pais: z.number().min(1),
+  })
+  .passthrough();
+
+function buildLeadPayload(
+  d: Record<string, unknown>,
+  options?: { stripCpf?: boolean },
+) {
+  const cpf =
+    typeof d.cpf === "string" && options?.stripCpf
+      ? d.cpf.replace(/\D/g, "") || undefined
+      : d.cpf;
+
+  const payload: Record<string, unknown> = {
+    ...d,
+    cpf,
+    ddd: toNum(d.ddd as string | number | undefined),
+    telefone: toNum(d.telefone as string | number | undefined),
+    cep: toNum(d.cep as string | number | undefined),
+    numero: toNum(d.numero as string | number | undefined),
+  };
+
+  return Object.fromEntries(
+    Object.entries(payload).filter(
+      ([, v]) => v !== undefined && v !== "" && v !== null,
+    ),
+  );
+}
+
+export async function updateLead(id: number | string, data: unknown) {
+  const leadId = typeof id === "string" ? Number(id) : id;
+  if (!leadId || Number.isNaN(leadId)) {
+    throw new Error("ID do parceiro inválido");
+  }
+
+  const parsed = UpdateLeadSchema.safeParse(data);
+  if (!parsed.success) {
+    const msg = Object.values(parsed.error.flatten().fieldErrors)
+      .flat()
+      .find(Boolean);
+    throw new Error((msg as string) || "Dados inválidos");
+  }
+
+  const body = buildLeadPayload(parsed.data as Record<string, unknown>, {
+    stripCpf: true,
+  });
+
+  try {
+    return await PUT(ENDPOINTS.UPDATE(leadId), body);
   } catch (err) {
     throw new Error(getApiError(err));
   }
