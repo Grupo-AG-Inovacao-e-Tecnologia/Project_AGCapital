@@ -1,6 +1,6 @@
 "use client";
 
-import { createEnrollmentGroup } from "@/API/leads/leads";
+import { createEnrollmentGroup, updateLead } from "@/API/leads/leads";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -156,6 +156,48 @@ export type EnrollmentLead = {
   [key: string]: unknown;
 };
 
+const UPDATE_LEAD_FIELDS = [
+  "codigo_externo",
+  "url",
+  "nome",
+  "email",
+  "emails",
+  "ddd",
+  "telefone",
+  "cpf",
+  "data_nascimento",
+  "cep",
+  "endereco",
+  "numero",
+  "bairro",
+  "estado",
+  "cidade",
+  "complemento",
+  "id_pais",
+] as const;
+
+function pickUpdateLeadFields(
+  data: EnrollmentFormValues,
+): Record<string, unknown> {
+  return Object.fromEntries(
+    UPDATE_LEAD_FIELDS.map((key) => [key, data[key]]).filter(
+      ([, value]) => value !== "" && value !== undefined && value !== null,
+    ),
+  );
+}
+
+function cleanFormData(data: EnrollmentFormValues): Record<string, unknown> {
+  const dataToSend = Object.fromEntries(
+    Object.entries(data).filter(([key]) => key !== "time_canais"),
+  );
+  return Object.fromEntries(
+    Object.entries(dataToSend).map(([key, value]) => [
+      key,
+      value === "" ? undefined : value,
+    ]),
+  );
+}
+
 export function EnrollmentFormDialog({
   enrollment,
 }: {
@@ -191,8 +233,13 @@ export function EnrollmentFormDialog({
     resolver: zodResolver(formSchema),
   });
 
-  const { mutate: createMutation, isPending: isLoading } = useMutation({
-    mutationFn: createEnrollmentGroup,
+  const { mutate: saveMutation, isPending: isLoading } = useMutation({
+    mutationFn: async (data: EnrollmentFormValues) => {
+      if (enrollment?.id) {
+        return updateLead(enrollment.id, pickUpdateLeadFields(data));
+      }
+      return createEnrollmentGroup(cleanFormData(data));
+    },
     onSuccess: () => {
       toast.success(
         enrollment
@@ -204,22 +251,15 @@ export function EnrollmentFormDialog({
     },
     onError: () => {
       toast.error(
-        "Erro ao salvar parceiro. Verifique os dados e tente novamente.",
+        enrollment
+          ? "Erro ao atualizar parceiro. Verifique os dados e tente novamente."
+          : "Erro ao salvar parceiro. Verifique os dados e tente novamente.",
       );
     },
   });
 
   const onSubmit = (data: EnrollmentFormValues) => {
-    const dataToSend = Object.fromEntries(
-      Object.entries(data).filter(([key]) => key !== "time_canais"),
-    );
-    const cleanedData = Object.fromEntries(
-      Object.entries(dataToSend).map(([key, value]) => [
-        key,
-        value === "" ? undefined : value,
-      ]),
-    );
-    createMutation(cleanedData);
+    saveMutation(data);
   };
 
   return (
