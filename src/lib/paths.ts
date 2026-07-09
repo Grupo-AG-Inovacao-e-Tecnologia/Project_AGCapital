@@ -12,4 +12,5 @@ export const paths = Object.freeze({
   enrollmentLeads: "/enrollment-leads",
   whatsapp: "/whatsapp",
   reports: "/reports",
+  emailSignature: "/email-signature",
 });
