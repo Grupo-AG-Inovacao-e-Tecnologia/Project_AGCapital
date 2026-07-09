@@ -3,6 +3,7 @@ import {
   IconBrandWhatsapp,
   IconChartBar,
   IconDashboard,
+  IconSignature,
   IconUserPlus,
 } from "@tabler/icons-react";
 
@@ -32,6 +33,11 @@ export const sidebarItems = {
       name: "Cadastro UniAG",
       url: paths.enrollmentLeads,
       icon: IconUserPlus,
+    },
+    {
+      name: "Assinatura de Email",
+      url: paths.emailSignature,
+      icon: IconSignature,
     },
     {
       name: "WhatsApp",

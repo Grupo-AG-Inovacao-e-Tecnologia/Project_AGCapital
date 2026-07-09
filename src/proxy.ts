@@ -1,8 +1,11 @@
+import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
 import type { NextAuthRequest } from "next-auth";
 
-import { auth } from "@/lib/auth";
+import { authConfig } from "@/lib/auth.config";
 import { paths } from "@/lib/paths";
+
+const { auth } = NextAuth(authConfig);
 
 function isPublicPath(pathname: string) {
   return pathname.startsWith(paths.auth.root) || pathname === paths.auth.logout;
