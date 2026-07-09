@@ -8,6 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Grupo AG Capital é um sistema interno para uso corporativo.",
     start_url: paths.auth.login,
     display: "standalone",
+    scope: paths.root,
     background_color: "#ffffff",
     theme_color: "#000000",
     icons: [
