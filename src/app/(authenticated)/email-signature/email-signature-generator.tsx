@@ -22,6 +22,8 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 import {
+  BAKED_ROLE_COVER,
+  DEFAULT_SIGNATURE_ROLE,
   DEFAULT_TEXT_LAYOUT,
   EMAIL_SIGNATURE_TEMPLATE_PATH,
   SIGNATURE_BASE_HEIGHT,
@@ -39,10 +41,11 @@ const inter = Inter({
 type LayoutField = keyof typeof DEFAULT_TEXT_LAYOUT;
 type LayoutKey = keyof TextLayout;
 
-const LAYOUT_FIELDS: LayoutField[] = ["name", "phone", "email"];
+const LAYOUT_FIELDS: LayoutField[] = ["name", "role", "phone", "email"];
 
 const LAYOUT_LABELS: Record<LayoutField, string> = {
   name: "Nome",
+  role: "Cargo",
   phone: "Telefone",
   email: "E-mail",
 };
@@ -50,6 +53,7 @@ const LAYOUT_LABELS: Record<LayoutField, string> = {
 export function EmailSignatureGenerator() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [name, setName] = useState("");
+  const [role, setRole] = useState(DEFAULT_SIGNATURE_ROLE);
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [layout, setLayout] = useState(DEFAULT_TEXT_LAYOUT);
@@ -98,11 +102,22 @@ export function EmailSignatureGenerator() {
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(templateImage, 0, 0, canvas.width, canvas.height);
+
+    // Hide the job title baked into the template PNG.
+    context.fillStyle = BAKED_ROLE_COVER.color;
+    context.fillRect(
+      BAKED_ROLE_COVER.x * SIGNATURE_SCALE,
+      BAKED_ROLE_COVER.y * SIGNATURE_SCALE,
+      BAKED_ROLE_COVER.width * SIGNATURE_SCALE,
+      BAKED_ROLE_COVER.height * SIGNATURE_SCALE,
+    );
+
     context.textBaseline = "alphabetic";
     context.fillStyle = "#ffffff";
 
     const fields: Array<{ text: string; layout: TextLayout }> = [
       { text: name, layout: layout.name },
+      { text: role, layout: layout.role },
       { text: phone, layout: layout.phone },
       { text: email, layout: layout.email },
     ];
@@ -118,7 +133,7 @@ export function EmailSignatureGenerator() {
         field.layout.y * SIGNATURE_SCALE,
       );
     }
-  }, [email, fontFamily, fontsReady, layout, name, phone, templateImage]);
+  }, [email, fontFamily, fontsReady, layout, name, phone, role, templateImage]);
 
   useEffect(() => {
     drawSignature();
@@ -153,6 +168,16 @@ export function EmailSignatureGenerator() {
               placeholder="Nome Sobrenome"
               value={name}
               onChange={(event) => setName(event.target.value)}
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="signature-role">Cargo</FieldLabel>
+            <Input
+              id="signature-role"
+              placeholder="Agente Tributário"
+              value={role}
+              onChange={(event) => setRole(event.target.value)}
             />
           </Field>
 
