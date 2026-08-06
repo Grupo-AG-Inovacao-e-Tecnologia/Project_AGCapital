@@ -12,7 +12,7 @@ const ENDPOINTS = {
 const EnrollmentSchema = z
   .object({
     nome: z.string().min(3, "Nome é obrigatório"),
-    email: z.string().email("Email inválido"),
+    email: z.email("Email inválido"),
     id_pais: z.number().min(1),
     id_unidade: z.number().min(1),
     id_departamento: z.number().min(1, "Departamento é obrigatório"),

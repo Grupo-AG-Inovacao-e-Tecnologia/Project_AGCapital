@@ -8,18 +8,24 @@ import {
 } from "@/components/ui/tooltip";
 
 interface TooltipActionProps {
-  title: string;
+  title: React.ReactNode;
   asChild?: boolean;
+  className?: string;
   children: React.ReactNode;
 }
 
-function TooltipAction({ title, asChild = false, children }: TooltipActionProps) {
+function TooltipAction({
+  title,
+  asChild = false,
+  className,
+  children,
+}: TooltipActionProps) {
   return (
     <Tooltip>
       <TooltipTrigger asChild={asChild}>
         {asChild ? children : <span className="inline-block">{children}</span>}
       </TooltipTrigger>
-      <TooltipContent>{title}</TooltipContent>
+      <TooltipContent className={className}>{title}</TooltipContent>
     </Tooltip>
   );
 }

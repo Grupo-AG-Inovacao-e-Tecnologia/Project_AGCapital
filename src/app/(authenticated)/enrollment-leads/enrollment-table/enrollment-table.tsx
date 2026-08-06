@@ -27,6 +27,13 @@ import { toast } from "sonner";
 import { EnrollmentFormDialog } from "./enrollment-form-dialog";
 import { format } from "date-fns";
 
+export type CursoMatriculado = {
+  id_curso: number;
+  titulo_curso: string;
+  id_turma?: number;
+  turma?: string;
+};
+
 export type LeadRow = {
   id: string;
   nome: string;
@@ -35,8 +42,53 @@ export type LeadRow = {
   telefone?: string;
   data_cadastro: string;
   ultimo_login: string;
+  cursos_matriculados?: CursoMatriculado[];
   [key: string]: unknown;
 };
+
+function normalizeCursos(
+  cursos: LeadRow["cursos_matriculados"] | CursoMatriculado | unknown,
+): CursoMatriculado[] {
+  if (!cursos) return [];
+  if (Array.isArray(cursos)) {
+    return cursos.filter(
+      (curso): curso is CursoMatriculado =>
+        !!curso &&
+        typeof curso === "object" &&
+        typeof (curso as CursoMatriculado).titulo_curso === "string",
+    );
+  }
+  if (
+    typeof cursos === "object" &&
+    typeof (cursos as CursoMatriculado).titulo_curso === "string"
+  ) {
+    return [cursos as CursoMatriculado];
+  }
+  return [];
+}
+
+function formatCursosTooltip(
+  cursos: LeadRow["cursos_matriculados"] | CursoMatriculado | unknown,
+) {
+  const list = normalizeCursos(cursos);
+  if (list.length === 0) {
+    return "Nenhum curso matriculado";
+  }
+
+  return (
+    <div className="flex flex-col gap-1 text-left">
+      <span className="font-medium">Cursos matriculados</span>
+      <ul className="list-disc space-y-0.5 pl-3.5">
+        {list.map((curso) => (
+          <li key={`${curso.id_curso}-${curso.id_turma ?? "sem-turma"}`}>
+            {curso.titulo_curso}
+            {curso.turma ? ` (${curso.turma})` : ""}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 type SearchResult = {
   data: LeadRow[];
@@ -60,8 +112,14 @@ const columns: ColumnDef<LeadRow>[] = [
     accessorKey: "nome",
     header: "Nome",
     cell: ({ row }) => (
-      <TooltipAction title={row.original.nome} asChild>
-        <span>{row.original.nome}</span>
+      <TooltipAction
+        title={formatCursosTooltip(row.original.cursos_matriculados)}
+        className="max-w-xs"
+        asChild
+      >
+        <span className="cursor-help underline-offset-2 hover:underline">
+          {row.original.nome}
+        </span>
       </TooltipAction>
     ),
     enableHiding: false,
