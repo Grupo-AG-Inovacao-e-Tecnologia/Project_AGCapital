@@ -22,7 +22,6 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 import {
-  BAKED_ROLE_COVER,
   DEFAULT_SIGNATURE_ROLE,
   DEFAULT_TEXT_LAYOUT,
   EMAIL_SIGNATURE_TEMPLATE_PATH,
@@ -102,16 +101,6 @@ export function EmailSignatureGenerator() {
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(templateImage, 0, 0, canvas.width, canvas.height);
-
-    // Hide the job title baked into the template PNG.
-    context.fillStyle = BAKED_ROLE_COVER.color;
-    context.fillRect(
-      BAKED_ROLE_COVER.x * SIGNATURE_SCALE,
-      BAKED_ROLE_COVER.y * SIGNATURE_SCALE,
-      BAKED_ROLE_COVER.width * SIGNATURE_SCALE,
-      BAKED_ROLE_COVER.height * SIGNATURE_SCALE,
-    );
-
     context.textBaseline = "alphabetic";
     context.fillStyle = "#ffffff";
 
